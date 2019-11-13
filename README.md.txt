@@ -1,1 +1,0 @@
-R code for the BCF-IV algorithm
