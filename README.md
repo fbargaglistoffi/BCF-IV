@@ -1,6 +1,7 @@
-# Code for the paper "Heterogeneous causal effects with imperfect compliance: a novel Bayesian machine learning approach" by F.J. Bargagli-Stoffi, K. De Witte and G. Gnecco
+# Code for the Bayesian Causal Forest with Instrumental Variable
 
-In this repository we provide the code for the BCF-IV function and for the application part of the paper.
+In this repository we provide the code for the BCF-IV function and for the application part of the paper "Heterogeneous causal effects with imperfect compliance: a novel Bayesian machine learning approach" by F.J. Bargagli-Stoffi, K. De Witte and G. Gnecco.
+The paper can be found [here](https://arxiv.org/pdf/1905.12707.pdf).
 
 # BCF-IV function
 
