@@ -1,3 +1,4 @@
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
 # Code for the paper "Heterogeneous causal effects with imperfect compliance: a novel Bayesian machine learning approach" by F.J. Bargagli-Stoffi, K. De Witte and G. Gnecco
 
 In this repository we provide the code for the BCF-IV function and for the application part of the paper.
