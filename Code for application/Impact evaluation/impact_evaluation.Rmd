@@ -1,0 +1,534 @@
+---
+title: "Identification of Heterogeneous Causal Effects"
+author: "Falco J. Bargagli Stoffi"
+date: "26/12/2018"
+output:
+  pdf_document:
+    keep_tex: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r include=FALSE}
+# Load packages
+
+library(rpart.utils)
+library(rpart.plot)
+library(haven)
+library(bcf)
+library(AER)
+```
+
+# Identifying the Causal Effects
+
+In this section we estimate the causal effects of additional funding on students performances.
+Namely, our outcome variables are \textit{certificate} (which is a dummy variable that assumes value 1 if the student gets an "A" certificate: the highest possible grade in the Flanders) and \textit{progress school} (which is a dummy recording whether or not the student got school retention).
+
+```{r include = FALSE}
+rm(list=ls())
+setwd("G:\\Il mio Drive\\Causal Tree IV\\Honest Causal Tree\\new_data")
+
+# Load Data
+
+students_data <- read_dta("first_stage_students_2011.dta")
+students_data$eligible_dummy <- students_data$D
+
+
+myvars <- c("llncode", "schooljaar", "school", "GOKpercentage", "eligible_dummy",
+            "GOKschool","PA", "progress_school", "certificate", "ST", "TNN",
+            "Opl", "thuisloos","trekkend", "change_school",
+            "primary_retention", "man", "BULO", "GONschool","leerkracht_fulltime",
+            "leerkracht_diploma", "leerkracht_age", "leerkracht_seniority",
+            "leerkracht_female", "directie_age", "leerkracht_unexperienced0_10",
+            "directie_unexperienced0_10", "directie_seniority")
+
+students_data <- students_data[myvars]
+students_data_2011 <- students_data[which(students_data$schooljaar == 2011),]
+table(students_data_2011$GOKschool, students_data_2011$eligible_dummy)
+```
+
+# First Outcome: Certificate
+
+We now foucus on the effects when we sample units in a bandwidth of 0.035 (which is the optimal bandwidth for the outcome \textit{certificate}) around the cutoff (10\%).
+
+```{r }
+students_data_randomized_03_2011 <- 
+  students_data_2011[which(students_data_2011$GOKpercentage >= .065 
+                           & students_data_2011$GOKpercentage <= .135),]
+```
+
+Moreover, from every school we sample a number students in order to increase the balance in the covariate and to guarantee an equal representation to all the schools, avoiding biases related to the over-representation of biggest schools' students.
+In the first case, we sample 50 students from each school.
+
+```{r}
+schools <- 
+students_data_randomized_03_2011$school[which(
+!duplicated(students_data_randomized_03_2011$school))]
+
+sample_students <- as.data.frame(matrix(data = NA, nrow = 50*length(schools),
+                                        ncol = ncol(students_data_randomized_03_2011)))
+colnames(sample_students) <- colnames(students_data_randomized_03_2011)
+
+for (j in (0:(length(schools)-1))){
+  set.seed(j  + 123)
+  sample_students[(1+(j*50)):(50+(j*50)),]  <-
+  students_data_randomized_03_2011[which(
+  students_data_randomized_03_2011$school %in%
+  schools[j+1]),][sample(1:nrow(students_data_randomized_03_2011[which(
+  students_data_randomized_03_2011$school %in% schools[j+1]),]),
+  50, replace = FALSE ),]
+}
+
+sample_student <- round(sample_students[, -(1:4)], 0)
+sample_students <- cbind(sample_students[,1:4], sample_student)
+```
+
+Then we run our BCF-IV algorithm on this sample of units.
+
+```{r results = 'hide', include = TRUE, message = FALSE, warning = FALSE}
+# Attaching the Sample and the Covariates
+attach(sample_students)
+x <- cbind(primary_retention , man , BULO, 
+           leerkracht_age , leerkracht_seniority,
+           leerkracht_diploma,
+           directie_age, directie_seniority
+)
+z <- as.matrix(eligible_dummy)
+y <- as.matrix(certificate)
+logit<-glm(eligible_dummy ~ GOKpercentage,
+           data = sample_students, family = binomial(link = "logit"))
+summary(logit)
+pihat<-predict(logit, sample_students, type="response")
+detach(sample_students)
+
+# Running the BCF algorithm on the IV
+set.seed(123)
+bcf_fit <- bcf(y, z, x, x, pihat, nburn=2000, nsim=2000)
+tau_post <- bcf_fit$tau
+tauhat <- colMeans(tau_post)
+
+exp <- as.data.frame(cbind(tauhat, y, x, z))
+```
+
+```{r echo=FALSE}
+fitted.tree <- rpart(tauhat ~ x,
+                     data = exp,
+                     maxdepth = 2)
+fitted.tree
+rpart.plot(fitted.tree, cex=0.5, box.palette="OrRd",branch.lty=1, 
+           shadow.col="gray", nn=TRUE, main="BCF-IV First Stage", prefix="ITT\n")
+```
+
+```{r}
+ITT = mean(sample_students$certificate[which(sample_students$eligible_dummy==1)]) - mean(sample_students$certificate[which(sample_students$eligible_dummy==0)])
+ITT
+
+ITT = mean(students_data_randomized_03_2011$certificate[which(students_data_randomized_03_2011$eligible_dummy==1)]) - mean(students_data_randomized_03_2011$certificate[which(students_data_randomized_03_2011$eligible_dummy==0)])
+ITT
+
+z <- as.matrix(sample_students$eligible_dummy)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = primary_retention < 0.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = primary_retention >= 0.5),
+        vcov = sandwich, diagnostics = TRUE)
+#summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+#              subset = primary_retention < 0.5 & leerkracht_age >= 4.5),
+#        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = primary_retention < 0.5 & leerkracht_age < 4.5),
+        vcov = sandwich, diagnostics = TRUE)
+#summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+#              subset = primary_retention >= 0.5 & leerkracht_age >= 4.5),
+#        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = primary_retention >= 0.5 & leerkracht_age < 4.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = primary_retention < 0.5 & directie_seniority >= 5.5 
+              & leerkracht_age < 4.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = primary_retention < 0.5 & directie_seniority < 5.5 
+              & leerkracht_age < 4.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = leerkracht_age >= 3.5 
+              & leerkracht_age < 4.5 
+              & directie_seniority < 5.5),
+        vcov = sandwich, diagnostics = TRUE)
+
+# From the help file for AER, it says it does an F-test on the first stage regression; I believe the null is that the instrument is weak. For the model you report, the null is rejected, so you can move forward with the assumption that the instrument is sufficiently strong.
+
+# Let's see what happens when we rule out the dependency on "retention"
+# Teacher Age
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = leerkracht_age <= 4.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = leerkracht_age <= 4),
+        vcov = sandwich, diagnostics = TRUE)
+
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = directie_age >= 5.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = directie_age < 5.5),
+        vcov = sandwich, diagnostics = TRUE)
+
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset =  directie_seniority < 5.5 
+              & leerkracht_age < 4.5),
+        vcov = sandwich, diagnostics = TRUE)
+
+
+```
+
+In the second case we sample 62 students from every school (where 62 units is the size of the smallest school).
+
+```{r echo=FALSE}
+schools <- 
+students_data_randomized_03_2011$school[which(
+!duplicated(students_data_randomized_03_2011$school))]
+
+sample_students <- as.data.frame(matrix(data = NA, nrow = 62*length(schools),
+                                        ncol = ncol(students_data_randomized_03_2011)))
+colnames(sample_students) <- colnames(students_data_randomized_03_2011)
+
+for (j in (0:(length(schools)-1))){
+  set.seed(j  + 123)
+  sample_students[(1+(j*62)):(62+(j*62)),]  <-
+  students_data_randomized_03_2011[which(
+  students_data_randomized_03_2011$school %in%
+  schools[j+1]),][sample(1:nrow(students_data_randomized_03_2011[which(
+  students_data_randomized_03_2011$school %in% schools[j+1]),]),
+  62, replace = FALSE ),]
+}
+
+sample_student <- round(sample_students[, -(1:4)], 0)
+sample_students <- cbind(sample_students[,1:4], sample_student)
+```
+
+```{r results = 'hide', include = TRUE, message = FALSE, warning = FALSE}
+# Attaching the Sample and the Covariates
+attach(sample_students)
+x <- cbind(primary_retention , man , BULO, 
+           leerkracht_age , leerkracht_seniority,   
+           directie_age, directie_seniority
+)
+z <- as.matrix(eligible_dummy)
+y <- as.matrix(certificate)
+logit<-glm(eligible_dummy ~ GOKpercentage,
+           data = sample_students, family = binomial(link = "logit"))
+summary(logit)
+pihat<-predict(logit, sample_students, type="response")
+detach(sample_students)
+
+# Running the BCF algorithm on the IV
+set.seed(123)
+bcf_fit <- bcf(y, z, x, x, pihat, nburn=2000, nsim=2000)
+tau_post <- bcf_fit$tau
+tauhat <- colMeans(tau_post)
+
+exp <- as.data.frame(cbind(tauhat, y, x, z))
+```
+
+As we can see from the plot the most important variables detected are the same: \textit{teacher age} and \textit{primary retention}.
+
+
+```{r echo=FALSE}
+fitted.tree <- rpart(tauhat ~ x,
+                     data = exp,
+                     maxdepth = 3)
+fitted.tree
+rpart.plot(fitted.tree, cex=0.5, box.palette="OrRd",branch.lty=1, 
+           shadow.col="gray", nn=TRUE, main="BCF-IV First Stage", prefix="ITT\n")
+```
+
+
+```{r}
+ITT = mean(sample_students$certificate[which(sample_students$eligible_dummy==1)]) - mean(sample_students$certificate[which(sample_students$eligible_dummy==0)])
+ITT
+
+ITT = mean(students_data_randomized_03_2011$certificate[which(students_data_randomized_03_2011$eligible_dummy==1)]) - mean(students_data_randomized_03_2011$certificate[which(students_data_randomized_03_2011$eligible_dummy==0)])
+ITT
+
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = primary_retention < 0.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = primary_retention >= 0.5),
+        vcov = sandwich, diagnostics = TRUE)
+#summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+#              subset = primary_retention < 0.5 & leerkracht_age >= 4.5),
+#        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = primary_retention < 0.5 & leerkracht_age < 4.5),
+        vcov = sandwich, diagnostics = TRUE)
+#summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+#              subset = primary_retention >= 0.5 & leerkracht_age >= 4.5),
+#        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = primary_retention >= 0.5 & leerkracht_age < 4.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = primary_retention < 0.5 & directie_seniority >= 5.5 
+              & leerkracht_age < 4.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = primary_retention < 0.5 & directie_seniority < 5.5 
+              & leerkracht_age < 4.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = leerkracht_age >= 3.5 
+              & leerkracht_age < 4.5 
+              & directie_seniority < 5.5),
+        vcov = sandwich, diagnostics = TRUE)
+
+# From the help file for AER, it says it does an F-test on the first stage regression; I believe the null is that the instrument is weak. For the model you report, the null is rejected, so you can move forward with the assumption that the instrument is sufficiently strong.
+
+# Let's see what happens when we rule out the dependency on "retention"
+# Teacher Age
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = leerkracht_age <= 4.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = leerkracht_age <= 4),
+        vcov = sandwich, diagnostics = TRUE)
+
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = directie_age >= 5.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = directie_age < 5.5),
+        vcov = sandwich, diagnostics = TRUE)
+
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset =  directie_seniority < 5.5 
+              & leerkracht_age < 4.5),
+        vcov = sandwich, diagnostics = TRUE)
+
+```
+
+# Second Outcome: School Progress
+
+We now foucus on the effects when we sample units in a bandwidth of 0.035 (which is the optimal bandwidth for the outcome \textit{progress\_school}) around the cutoff (10\%).
+
+```{r }
+students_data_randomized_03_2011 <- 
+  students_data_2011[which(students_data_2011$GOKpercentage >= .063 
+                           & students_data_2011$GOKpercentage <= .137),]
+```
+
+Moreover, from every school we sample a number students in order to increase the balance in the covariate and to guarantee an equal representation to all the schools, avoiding biases related to the over-representation of biggest schools' students.
+In the first case, we sample 50 students from each school.
+
+```{r}
+schools <- 
+students_data_randomized_03_2011$school[which(
+!duplicated(students_data_randomized_03_2011$school))]
+
+sample_students <- as.data.frame(matrix(data = NA, nrow = 50*length(schools),
+                                        ncol = ncol(students_data_randomized_03_2011)))
+colnames(sample_students) <- colnames(students_data_randomized_03_2011)
+
+for (j in (0:(length(schools)-1))){
+  set.seed(j  + 123)
+  sample_students[(1+(j*50)):(50+(j*50)),]  <-
+  students_data_randomized_03_2011[which(
+  students_data_randomized_03_2011$school %in%
+  schools[j+1]),][sample(1:nrow(students_data_randomized_03_2011[which(
+  students_data_randomized_03_2011$school %in% schools[j+1]),]),
+  50, replace = FALSE ),]
+}
+
+sample_student <- round(sample_students[, -(1:4)], 0)
+sample_students <- cbind(sample_students[,1:4], sample_student)
+```
+
+Then we run our BCF-IV algorithm on this sample of units.
+
+```{r results = 'hide', include = TRUE, message = FALSE, warning = FALSE}
+# Attaching the Sample and the Covariates
+attach(sample_students)
+x <- cbind(primary_retention , man , BULO, 
+           leerkracht_age , leerkracht_seniority,   
+           directie_age, directie_seniority
+)
+z <- as.matrix(eligible_dummy)
+y <- as.matrix(progress_school)
+logit<-glm(eligible_dummy ~ GOKpercentage,
+           data = sample_students, family = binomial(link = "logit"))
+summary(logit)
+pihat<-predict(logit, sample_students, type="response")
+detach(sample_students)
+
+# Running the BCF algorithm on the IV
+set.seed(123)
+bcf_fit <- bcf(y, z, x, x, pihat, nburn=2000, nsim=2000)
+tau_post <- bcf_fit$tau
+tauhat <- colMeans(tau_post)
+
+exp <- as.data.frame(cbind(tauhat, y, x, z))
+```
+
+```{r echo=FALSE}
+fitted.tree <- rpart(tauhat ~ x,
+                     data = exp,
+                     #minsplit = nrow(x)/10,
+                     maxdepth = 2)
+fitted.tree
+rpart.plot(fitted.tree, cex=0.5, box.palette="OrRd",branch.lty=1, 
+           shadow.col="gray", nn=TRUE, main="Causal Tree", prefix="ITT\n")
+```
+
+```{r}
+ITT = mean(sample_students$progress_school[which(sample_students$eligible_dummy==1)]) - mean(sample_students$progress_school[which(sample_students$eligible_dummy==0)])
+ITT
+
+ITT = mean(students_data_randomized_03_2011$progress_school[which(students_data_randomized_03_2011$eligible_dummy==1)]) - mean(students_data_randomized_03_2011$progress_school[which(students_data_randomized_03_2011$eligible_dummy==0)])
+ITT
+
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = man < 0.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = man > 0.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = man < 0.5 & directie_seniority >= 5.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = man < 0.5 & directie_seniority < 5.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = man > 0.5 & directie_seniority >= 5.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = man > 0.5 & directie_seniority < 5.5),
+        vcov = sandwich, diagnostics = TRUE)
+
+# From the help file for AER, it says it does an F-test on the first stage regression; I believe the null is that the instrument is weak. For the model you report, the null is rejected, so you can move forward with the assumption that the instrument is sufficiently strong.
+
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset =  directie_seniority >= 5.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset =  directie_seniority < 5.5),
+        vcov = sandwich, diagnostics = TRUE)
+```
+
+In the second case we sample 62 students from every school (where 62 units is the size of the smallest school).
+
+```{r echo=FALSE}
+schools <- 
+students_data_randomized_03_2011$school[which(
+!duplicated(students_data_randomized_03_2011$school))]
+
+sample_students <- as.data.frame(matrix(data = NA, nrow = 62*length(schools),
+                                        ncol = ncol(students_data_randomized_03_2011)))
+colnames(sample_students) <- colnames(students_data_randomized_03_2011)
+
+for (j in (0:(length(schools)-1))){
+  set.seed(j  + 123)
+  sample_students[(1+(j*62)):(62+(j*62)),]  <-
+  students_data_randomized_03_2011[which(
+  students_data_randomized_03_2011$school %in%
+  schools[j+1]),][sample(1:nrow(students_data_randomized_03_2011[which(
+  students_data_randomized_03_2011$school %in% schools[j+1]),]),
+  62, replace = FALSE ),]
+}
+
+sample_student <- round(sample_students[, -(1:4)], 0)
+sample_students <- cbind(sample_students[,1:4], sample_student)
+```
+
+```{r results = 'hide', include = TRUE, message = FALSE, warning = FALSE}
+# Attaching the Sample and the Covariates
+attach(sample_students)
+x <- cbind(primary_retention , man , BULO, 
+           leerkracht_age , leerkracht_seniority,   
+           directie_age, directie_seniority
+)
+z <- as.matrix(eligible_dummy)
+y <- as.matrix(progress_school)
+logit<-glm(eligible_dummy ~ GOKpercentage,
+           data = sample_students, family = binomial(link = "logit"))
+summary(logit)
+pihat<-predict(logit, sample_students, type="response")
+detach(sample_students)
+
+# Running the BCF algorithm on the IV
+set.seed(123)
+bcf_fit <- bcf(y, z, x, x, pihat, nburn=2000, nsim=2000)
+tau_post <- bcf_fit$tau
+tauhat <- colMeans(tau_post)
+
+exp <- as.data.frame(cbind(tauhat, y, x, z))
+```
+
+```{r echo=FALSE}
+fitted.tree <- rpart(tauhat ~ x,
+                     data = exp,
+                    #minsplit = nrow(x)/10,
+                     maxdepth = 2)
+rpart.plot(fitted.tree, cex=0.5, box.palette="OrRd",branch.lty=1, 
+           shadow.col="gray", nn=TRUE, main="Causal Tree", prefix="ITT\n")
+```
+We can further trim the tree.
+
+```{r}
+temp <- snip.rpart(fitted.tree, 2)
+rpart.plot(temp, cex=0.5, box.palette="OrRd",branch.lty=1 , under = TRUE,
+            shadow.col="gray", nn=TRUE, main="Causal Tree", prefix="ITT\n")
+```
+
+Let's now see if the heterogeneous effects are robust:
+
+```{r}
+ITT = mean(sample_students$progress_school[which(sample_students$eligible_dummy==1)]) - mean(sample_students$progress_school[which(sample_students$eligible_dummy==0)])
+ITT
+
+ITT = mean(students_data_randomized_03_2011$progress_school[which(students_data_randomized_03_2011$eligible_dummy==1)]) - mean(students_data_randomized_03_2011$progress_school[which(students_data_randomized_03_2011$eligible_dummy==0)])
+ITT
+
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = man < 0.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = man > 0.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = man < 0.5 & directie_seniority >= 5.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = man < 0.5 & directie_seniority < 5.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = man > 0.5 & directie_seniority >= 5.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset = man > 0.5 & directie_seniority < 5.5),
+        vcov = sandwich, diagnostics = TRUE)
+
+
+# From the help file for AER, it says it does an F-test on the first stage regression; I believe the null is that the instrument is weak. For the model you report, the null is rejected, so you can move forward with the assumption that the instrument is sufficiently strong.
+
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset =  directie_seniority >= 5.5),
+        vcov = sandwich, diagnostics = TRUE)
+summary(ivreg(formula = y ~ x + GOKschool | x + z, data = sample_students,
+              subset =  directie_seniority < 5.5),
+        vcov = sandwich, diagnostics = TRUE)
+```
