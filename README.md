@@ -19,9 +19,10 @@ More details on the R code for the BCF-IV function can be found [here](https://g
 
 Example usage:
 
-<tt>`
+```R
 source("bcf-iv.R")
-set.seed(123)
+
 bcf_iv(y, w, z, x, max_depth = 2, n_burn= 2000, n_sim= 2000, binary = TRUE)
+
 mm_bcf_iv(y, w, z, x, max_depth = 2, n_burn= 2000, n_sim= 2000, binary = TRUE)
- `</tt>
+```
