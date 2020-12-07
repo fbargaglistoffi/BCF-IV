@@ -1,5 +1,7 @@
 # Code for Bayesian Causal Forest with Instrumental Variable
 
+*New Code out on December 20th*
+
 In this repository we provide the code for the _BCF-IV_ function and for the application part of the paper _"Heterogeneous causal effects with imperfect compliance: a novel Bayesian machine learning approach"_ by F.J. Bargagli-Stoffi, K. De Witte and G. Gnecco. This function discovers the effect heterogeneity and provides two ways to estimate the heterogeneous causal effect (two-stage least squares and method-of-moments) in scenarios where the assignment mechanism is irregular.
 The _BCF-IV_ function directly builds on the Bayesian Causal Forest algorithm by Hahn, Murray and Carvalho.
 
