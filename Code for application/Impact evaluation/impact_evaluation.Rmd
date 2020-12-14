@@ -1,15 +1,13 @@
 ---
 title: "Identification of Heterogeneous Causal Effects"
-author: "Falco J. Bargagli Stoffi"
-date: "12/09/2019"
-output:
-  pdf_document:
-    keep_tex: true
+author: "Falco J. Bargagli-Stoffi"
+date: "14/12/2020"
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_knit$set(root.dir = 'G:\\Il mio Drive\\Causal Tree IV\\Honest Causal Tree\\new_data')
+knitr::opts_knit$set(root.dir = '/Volumes/GoogleDrive/My Drive/Research//BCF-IV/Data')
 ```
 
 ```{r include=FALSE}
@@ -27,14 +25,12 @@ source("bcf_iv.R")
 # Identifying the Causal Effects
 
 In this section we estimate the causal effects of additional funding on students performances.
-Namely, our outcome variables are \textit{certificate} (which is a dummy variable that assumes value 1 if the student gets an "A" certificate: the highest possible grade in the Flanders) and \textit{progress school} (which is a dummy recording whether or not the student got school retention).
-\par This analyses are performed using the probit version of the BCF-IV algorithm (Hahn et al. 2017, Starling et al., 2019).
+In particular, our outcome variables are \texttt{certificate} (which is a dummy variable that assumes value 1 if the student gets an "A" certificate: the highest possible grade in the Flanders) and \texttt{progress school} (which is a dummy recording whether or not the student got school retention).
+
+The following analyses were performed using the algorithm proposed in the paper "Heterogeneous causal effects with imperfect compliance: a novel Bayesian machine learning approach" by Falco J. Bargagli Stoffi, Kristof De Witte and Giorgio Gnecco.
 
 ```{r include = FALSE}
-setwd("G:\\Il mio Drive\\Causal Tree IV\\Honest Causal Tree\\new_data")
-
 # Load Data
-
 students_data <- read_dta("first_stage_students_2011.dta")
 students_data$eligible_dummy <- students_data$D
 
@@ -54,7 +50,7 @@ table(students_data_2011$GOKschool, students_data_2011$eligible_dummy)
 
 # First Outcome: Certificate
 
-We now foucus on the effects when we sample units in a bandwidth of 0.035 (which is the optimal bandwidth for the outcome \textit{certificate}) around the cutoff (10\%).
+We now focus on the effects when we sample units in a bandwidth of 0.035 (which is the optimal bandwidth for the outcome \texttt{certificate}) around the threshold (10\%).
 
 ```{r }
 students_data_randomized_03_2011 <- 
@@ -63,6 +59,7 @@ students_data_randomized_03_2011 <-
 ```
 
 Moreover, from every school we sample a number students in order to increase the balance in the covariate and to guarantee an equal representation to all the schools, avoiding biases related to the over-representation of biggest schools' students.
+
 In the first case, we sample 50 students from each school.
 
 ```{r}
@@ -75,7 +72,7 @@ sample_students <- as.data.frame(matrix(data = NA, nrow = 50*length(schools),
 colnames(sample_students) <- colnames(students_data_randomized_03_2011)
 
 for (j in (0:(length(schools)-1))){
-  set.seed(j  + 123)
+  set.seed(j  + 2020)
   sample_students[(1+(j*50)):(50+(j*50)),]  <-
   students_data_randomized_03_2011[which(
   students_data_randomized_03_2011$school %in%
@@ -88,7 +85,7 @@ sample_student <- round(sample_students[, -(1:4)], 0)
 sample_students <- cbind(sample_students[,1:4], sample_student)
 ```
 
-Then we run our BCF-IV algorithm on this sample of units.
+Then, we run our BCF-IV algorithm on this sample of units.
 
 ```{r results = 'hide', include = TRUE, message = FALSE, warning = FALSE}
 # Attaching the Sample and the Covariates
@@ -107,20 +104,22 @@ detach(sample_students)
 Below we run the BCF-IV algorithm.
 
 ```{r , warning = FALSE}
-# Running the BCF algorithm on the IV
-set.seed(123)
-bcf_iv(y, w, z, x, max_depth = 2, n_burn= 2000, n_sim= 2000, binary = TRUE)
+set.seed(2020)
+bcf_iv(y, w, z, x, max_depth = 2, n_burn = 1000, n_sim = 1000,
+       inference_ratio = 0.50, binary = TRUE )
 ```
 
+As a robustness check, we run the BCF-ITT algorithm.
+
 ```{r , warning = FALSE}
-# Running the BCF algorithm on the IV
-set.seed(123)
-mm_bcf_iv(y, w, z, x, max_depth = 2, n_burn= 2000, n_sim= 2000, binary = TRUE)
+set.seed(2020)
+bcf_itt(y, w, z, x, max_depth = 2, n_burn = 1000, n_sim = 1000,
+        inference_ratio = 0.50, binary = TRUE ) 
 ```
 
 In the second case we sample 62 students from every school (where 62 units is the size of the smallest school).
 
-```{r echo=FALSE}
+```{r}
 schools <- 
 students_data_randomized_03_2011$school[which(
 !duplicated(students_data_randomized_03_2011$school))]
@@ -130,7 +129,7 @@ sample_students <- as.data.frame(matrix(data = NA, nrow = 62*length(schools),
 colnames(sample_students) <- colnames(students_data_randomized_03_2011)
 
 for (j in (0:(length(schools)-1))){
-  set.seed(j  + 123)
+  set.seed(j  + 2020)
   sample_students[(1+(j*62)):(62+(j*62)),]  <-
   students_data_randomized_03_2011[which(
   students_data_randomized_03_2011$school %in%
@@ -156,26 +155,27 @@ y <- as.matrix(certificate)
 detach(sample_students)
 ```
 
-As we can see from the plot the most important variables detected are the same: \textit{teacher age} and \textit{primary retention}.
-
+Below we run the BCF-IV algorithm.
 
 ```{r , warning = FALSE}
-# Running the BCF algorithm on the IV
-set.seed(123)
-bcf_iv(y, w, z, x, max_depth = 2, n_burn= 2000, n_sim= 2000, binary = TRUE)
+set.seed(2020) 
+bcf_iv(y, w, z, x, max_depth = 2, n_burn = 1000, n_sim = 1000,
+       inference_ratio = 0.50, binary = TRUE )
 ```
 
+As a robustness check, we run the BCF-ITT algorithm.
+
 ```{r , warning = FALSE}
-# Running the BCF algorithm on the IV
-set.seed(123)
-mm_bcf_iv(y, w, z, x, max_depth = 2, n_burn= 2000, n_sim= 2000, binary = TRUE)
+set.seed(2020)
+bcf_itt(y, w, z, x, max_depth = 2, n_burn = 1000, n_sim = 1000,
+        inference_ratio = 0.50, binary = TRUE )
 ```
 
 # Second Outcome: School Progress
 
-We now foucus on the effects when we sample units in a bandwidth of 0.035 (which is the optimal bandwidth for the outcome \textit{progress\_school}) around the cutoff (10\%).
+We now focus on the effects when we sample units in a bandwidth of 0.035 (which is the optimal bandwidth for the outcome \texttt{progress\_school}) around the threshold (10\%).
 
-```{r }
+```{r}
 students_data_randomized_03_2011 <- 
   students_data_2011[which(students_data_2011$GOKpercentage >= .063 
                            & students_data_2011$GOKpercentage <= .137),]
@@ -194,7 +194,7 @@ sample_students <- as.data.frame(matrix(data = NA, nrow = 50*length(schools),
 colnames(sample_students) <- colnames(students_data_randomized_03_2011)
 
 for (j in (0:(length(schools)-1))){
-  set.seed(j  + 123)
+  set.seed(j  + 2020)
   sample_students[(1+(j*50)):(50+(j*50)),]  <-
   students_data_randomized_03_2011[which(
   students_data_randomized_03_2011$school %in%
@@ -207,7 +207,7 @@ sample_student <- round(sample_students[, -(1:4)], 0)
 sample_students <- cbind(sample_students[,1:4], sample_student)
 ```
 
-Then we run our BCF-IV algorithm on this sample of units.
+Then, we run our BCF-IV algorithm on this sample of units.
 
 ```{r results = 'hide', include = TRUE, message = FALSE, warning = FALSE}
 # Attaching the Sample and the Covariates
@@ -222,39 +222,25 @@ y <- as.matrix(progress_school)
 detach(sample_students)
 ```
 
+Below we run the BCF-IV algorithm.
+
 ```{r , warning = FALSE}
-# Running the BCF algorithm on the IV
-set.seed(123)
-bcf_iv(y, w, z, x, max_depth = 2, n_burn= 2000, n_sim= 2000, binary = TRUE)
+set.seed(2020) 
+bcf_iv(y, w, z, x, max_depth = 2, n_burn = 1000, n_sim = 1000,
+       inference_ratio = 0.50, binary = TRUE )
 ```
 
-```{r , warning = FALSE}
-# Running the BCF algorithm on the IV
-set.seed(123)
-mm_bcf_iv(y, w, z, x, max_depth = 2, n_burn= 2000, n_sim= 2000, binary = TRUE)
-```
+As a robustness check, we run the BCF-ITT algorithm.
 
 ```{r , warning = FALSE}
-summary(ivreg(formula = y ~ w | z, data = sample_students), diagnostics = TRUE)
-summary(ivreg(formula = y ~ w | z, data = sample_students,
-              subset = directie_seniority < 5.5), diagnostics = TRUE)
-summary(ivreg(formula = y ~ w | z, data = sample_students,
-              subset = directie_seniority >= 5.5), diagnostics = TRUE)
-summary(ivreg(formula = y ~ w | z, data = sample_students,
-              subset = directie_seniority < 5.5 & directie_age >= 6.5 ), diagnostics = TRUE)
-summary(ivreg(formula = y ~ w | z, data = sample_students,
-              subset = directie_seniority < 5.5 & directie_age < 6.5 ), diagnostics = TRUE)
-
-summary(ivreg(formula = y ~ w | z, data = sample_students,
-              subset = directie_age < 6.5 ), diagnostics = TRUE)
-summary(ivreg(formula = y ~ w | z, data = sample_students,
-              subset = directie_age >= 6.5 ), diagnostics = TRUE)
-
+set.seed(2020)
+bcf_itt(y, w, z, x, max_depth = 2, n_burn = 1000, n_sim = 1000,
+        inference_ratio = 0.50, binary = TRUE )
 ```
 
 In the second case we sample 62 students from every school (where 62 units is the size of the smallest school).
 
-```{r echo=FALSE}
+```{r}
 schools <- 
 students_data_randomized_03_2011$school[which(
 !duplicated(students_data_randomized_03_2011$school))]
@@ -264,7 +250,7 @@ sample_students <- as.data.frame(matrix(data = NA, nrow = 62*length(schools),
 colnames(sample_students) <- colnames(students_data_randomized_03_2011)
 
 for (j in (0:(length(schools)-1))){
-  set.seed(j  + 123)
+  set.seed(j  + 2020)
   sample_students[(1+(j*62)):(62+(j*62)),]  <-
   students_data_randomized_03_2011[which(
   students_data_randomized_03_2011$school %in%
@@ -290,31 +276,18 @@ y <- as.matrix(progress_school)
 detach(sample_students)
 ```
 
+Below we run the BCF-IV algorithm.
+
 ```{r , warning = FALSE}
-# Running the BCF algorithm on the IV
-set.seed(123)
-bcf_iv(y, w, z, x, max_depth = 2, n_burn= 2000, n_sim= 2000, binary = TRUE)
+set.seed(2020)
+bcf_iv(y, w, z, x, max_depth = 2, n_burn = 1000, n_sim = 1000,
+       inference_ratio = 0.50, binary = TRUE )
 ```
 
-```{r , warning = FALSE}
-# Running the BCF algorithm on the IV
-set.seed(123)
-mm_bcf_iv(y, w, z, x, max_depth = 2, n_burn= 2000, n_sim= 2000, binary = TRUE)
-```
+As a robustness check, we run the BCF-ITT algorithm.
 
 ```{r , warning = FALSE}
-summary(ivreg(formula = y ~ w | z, data = sample_students), diagnostics = TRUE)
-summary(ivreg(formula = y ~ w | z, data = sample_students,
-              subset = directie_seniority < 5.5), diagnostics = TRUE)
-summary(ivreg(formula = y ~ w | z, data = sample_students,
-              subset = directie_seniority >= 5.5), diagnostics = TRUE)
-summary(ivreg(formula = y ~ w | z, data = sample_students,
-              subset = directie_seniority < 5.5 & directie_age >= 6.5 ), diagnostics = TRUE)
-summary(ivreg(formula = y ~ w | z, data = sample_students,
-              subset = directie_seniority < 5.5 & directie_age < 6.5 ), diagnostics = TRUE)
-
-summary(ivreg(formula = y ~ w | z, data = sample_students,
-              subset = directie_age < 6.5 ), diagnostics = TRUE)
-summary(ivreg(formula = y ~ w | z, data = sample_students,
-              subset = directie_age >= 6.5 ), diagnostics = TRUE)
+set.seed(2020)
+bcf_itt(y, w, z, x, max_depth = 2, n_burn = 1000, n_sim = 1000,
+        inference_ratio = 0.50, binary = TRUE )
 ```
