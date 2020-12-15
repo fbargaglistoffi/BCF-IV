@@ -1,6 +1,6 @@
 # Code for Bayesian Causal Forest with Instrumental Variable
 
-In this repository we provide the code for the _BCF-IV_ and _BCF-ITT_ functions and for the application and simulations' Sections of the paper [<a href="https://arxiv.org/abs/1905.12707"> _"Heterogeneous causal effects with imperfect compliance: a novel Bayesian machine learning approach"_ </a>] by F.J. Bargagli-Stoffi, K. De Witte and G. Gnecco. 
+In this repository we provide the code for the _BCF-IV_ and _BCF-ITT_ functions and for the application and simulations' Sections of the paper <a href="https://arxiv.org/abs/1905.12707"> _"Heterogeneous causal effects with imperfect compliance: a novel Bayesian machine learning approach"_ </a> by F.J. Bargagli-Stoffi, K. De Witte and G. Gnecco. 
 
 The _BCF-IV_ function discovers and estimates, in an interpretable manner, the effects heterogeneity in scenarios where the assignment mechanism is irregular (e.g., instrumental variable and fuzzy regression discontinuity designs). This function is directly build to discover and estimate the heterogeneity in the Complier Average Treatment Effects (CACE). The _BCF-ITT_ function discovers the heterogeneity in the intention-to-treat (ITT) and then estimates the effect both for the conditional ITT and the conditional CACE for the discovered subgroups.
 
