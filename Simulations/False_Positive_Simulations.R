@@ -115,8 +115,8 @@ generate_data_confounding <- function(n, p, rho, effect_size, compliance){
   z = rbinom(n, 1, prob=prob) 
   
   #  Unit level observed exposure and observed response
-  w <- z * w1 + (1-z) * w0 + x3 + x4
-  y <- z * y1 + (1-z) * y0 + x3 + x4
+  w <- z * w1 + (1-z) * w0
+  y <- z * y1 + (1-z) * y0
   
   # Observed data
   dataset <- as.data.frame(cbind(y, z, w, X))
