@@ -280,7 +280,7 @@ bcf_iv <- function(y, w, z, x, binary = FALSE, n_burn = 500, n_sim = 500, infere
   return(bcfivResults)
 }
 
-##### bcf_iv: function for discovery and estimation of heterogeneity in the Intention-To-Treat in Instrumental Variable settings
+##### bcf_itt: function for discovery and estimation of heterogeneity in the Intention-To-Treat in Instrumental Variable settings
 ### INPUTs:y: outcome vector (n x 1)
 ###        z: vector of treatment assigned (aka instrumental variable)  (n x 1)
 ###        x: covariates matrix (n x p) 
