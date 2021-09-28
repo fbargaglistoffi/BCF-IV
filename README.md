@@ -45,7 +45,7 @@ source("bcf-iv.R")
 
 bcf_iv(y, w, z, x, n_burn = 2000, n_sim = 2000, inference_ratio = 0.50, binary = TRUE, max_depth = 2, adj_method = "holm")
 
-bcf_itt(y, w, z, x, n_burn= 2000, n_sim = 2000, inference_ratio = 0.50, binary = TRUE, max_depth = 2)
+bcf_itt(y, z, x, n_burn= 2000, n_sim = 2000, inference_ratio = 0.50, binary = TRUE, max_depth = 2)
 ```
 
 #### References
