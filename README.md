@@ -17,9 +17,9 @@ Import:
 library("BayesIV")
 ```
 
-## BCF-IV function
+## BCF-IV 
 
-The _BCF-IV_ function discovers and estimates, in an interpretable manner, the effects heterogeneity in settings where the assignment mechanism is irregular (e.g., instrumental variable and fuzzy regression discontinuity scenarios). This function is directly built to discover and estimate the heterogeneity in the Complier Average Treatment Effects (CACE).
+The _bcf-iv_ function discovers and estimates, in an interpretable manner, the effects heterogeneity in settings where the assignment mechanism is irregular (e.g., instrumental variable and fuzzy regression discontinuity scenarios). This function is directly built to discover and estimate the heterogeneity in the Complier Average Treatment Effects (CACE).
 The function takes as inputs:
 
 * <tt>`y`</tt>: the outcome variable;
@@ -37,9 +37,9 @@ The function takes as inputs:
 
 The _bcf_iv_ function returns the discovered sub-population, the conditional complier average treatment effect (CCACE), the p-value for this effect, the p-value for a weak-instrument test, the adjusted p-value, the proportion of compliers, the conditional intention-to-treat effect (CITT) and the proportion of compliers in the node.
 
-## BCF-ITT function
+## BCF-ITT 
 
-The _BCF-ITT_ function discovers the heterogeneity in the intention-to-treat (ITT) and then estimates the effect both for the conditional ITT and the conditional CACE for the discovered subgroups.
+The _bcf-itt_ function discovers the heterogeneity in the intention-to-treat (ITT) and then estimates the effect both for the conditional ITT and the conditional CACE for the discovered subgroups.
 The function takes as inputs:
 
 * <tt>`y`</tt>: the outcome variable;
