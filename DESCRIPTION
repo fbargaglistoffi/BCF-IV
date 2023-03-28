@@ -1,4 +1,4 @@
-Package: BCFIV
+Package: BayesIV
 Title: Bayesian Causal Forest with Instrumental Variable
 Version: 0.0.1.0
 Authors@R: c(
