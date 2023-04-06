@@ -14,7 +14,7 @@
 #' @param n_sim iterations to save post burn-in for Bayesian Causal Forest.
 #' @param inference_ratio % of observations to be assigned to the inference 
 #' subsample.
-#' #' @param binary Boolean to identify whether the outcome is binary or not, i.e., 
+#' @param binary Boolean to identify whether the outcome is binary or not, i.e., 
 #' continuous/discrete (default: FALSE).
 #'
 #' @return
