@@ -1,22 +1,32 @@
-##### bcf_itt: function for discovery and estimation of heterogeneity in the Intention-To-Treat in Instrumental Variable settings
-### INPUTs:y: outcome vector (n x 1)
-###        z: vector of treatment assigned (aka instrumental variable)  (n x 1)
-###        x: covariates matrix (n x p) 
-###        n_burn: burn-in MCMC iterations for Bayesian Causal Forest
-###        n_sim: iterations to save post burn-in for Bayesian Causal Forest
-###        inference_ratio: % of observations to be assigned to the inference subsample (default is 0.5)
-###        max_depth: maximal depth for the generated CART (default is 2)
-### OUTPUTS: (1) a tree structure discovering the heterogeneity in the causal effects, (2) TSLS estimates of the Complier Average Causal Effects (CCACE) within its nodes, (3) p-values for each CCACE, (4) p-value for weak-iv test
-
-bcf_itt <- function(y, w, z, x, max_depth, n_burn, n_sim, inference_ratio, binary = FALSE) {
-  
-  # Upload the Packages
-  require(bcf)
-  require(rpart)
-  require(lattice)
-  require(rattle)
-  require(AER)
-  require(bartCause)
+#' @title
+#' Bayesian Causal Forest with Intention To Treat
+#'
+#' @description
+#' Function for discovery and estimation of heterogeneity in the 
+#' Intention-To-Treat in Instrumental Variable settings.
+#'
+#' @param y outcome vector (n x 1).
+#' @param w vector of treatment received  (n x 1).
+#' @param z vector of treatment assigned (i.e., instrumental variable)  (n x 1).
+#' @param x covariates matrix (n x p).
+#' @param max_depth maximal depth for the generated CART.
+#' @param n_burn burn-in MCMC iterations for Bayesian Causal Forest.
+#' @param n_sim iterations to save post burn-in for Bayesian Causal Forest.
+#' @param inference_ratio % of observations to be assigned to the inference 
+#' subsample.
+#' #' @param binary Boolean to identify whether the outcome is binary or not, i.e., 
+#' continuous/discrete (default: FALSE).
+#'
+#' @return
+#' List with 4 elements:
+#'   - 1. a tree structure discovering the heterogeneity in the causal effects, 
+#'   - 2. TSLS estimates of the Complier Average Causal Effects (CCACE) within its nodes, 
+#'   - 3. p-values for each CCACE, 
+#'   - 4. p-value for weak-iv test
+#'
+#'
+bcf_itt <- function(y, w, z, x, max_depth, n_burn, n_sim, 
+                    inference_ratio, binary = FALSE) {
   
   ######################################################
   ####         Step 0: Initialize the Data          ####

@@ -1,29 +1,45 @@
-##### bcf_iv: function for discovery and estimation of heterogeneity in the Complier Average Causal Effect in Instrumental Variable settings
-### INPUTs:y: outcome vector (n x 1)
-###        w: vector of treatment received  (n x 1)
-###        z: vector of treatment assigned (aka instrumental variable)  (n x 1)
-###        x: covariates matrix (n x p) 
-###        binary: Boolean to identify whether the outcome is binary (TRUE) or continuous/discrete (FALSE) 
-###        n_burn: burn-in MCMC iterations for Bayesian Causal Forest
-###        n_sim: iterations to save post burn-in for Bayesian Causal Forest
-###        inference_ratio: % of observations to be assigned to the inference subsample (default is 0.5)
-###        max_depth: maximal depth for the generated CART (default is 2)
-###        cp: complexity parameter for the generated CART (default is 0.01)
-###        minsplit: minimum observations needed to perform a binary split in the tree (default is 10)
-###        adj_method: p-value adjustment method (default is "holm"), other options are "bonferroni", "hockberg", "hommel", "BH", "BY", "fdr", "none"
-###        seed: random seed for reproducible results (default is 42)
-### OUTPUTS: (1) a tree structure discovering the heterogeneity in the causal effects, (2) TSLS estimates of the Complier Average Causal Effects (CCACE) within its nodes, (3) p-values for each CCACE, (4) adjusted p-value for each CCACE, (5) Intention-to-Treat within all the nodes, (6) proportion of Compliers within all the nodes, (7) p-value for weak-iv test, (8) proportion of observations in the node 
-
-bcf_iv <- function(y, w, z, x, binary = FALSE, n_burn = 500, n_sim = 500, inference_ratio = 0.5, 
-                   max_depth = 2, cp = 0.01, minsplit = 10, adj_method = "holm", seed = 42) {
-  
-  # Upload the Packages
-  require(bcf)
-  require(rpart)
-  require(lattice)
-  require(rattle)
-  require(AER)
-  require(bartCause)
+#' @title
+#' Bayesian Causal Forest with Instrumental Variables
+#'
+#' @description
+#' Function for discovery and estimation of heterogeneity in the Complier 
+#' Average Causal Effect in Instrumental Variable settings.
+#'
+#' @param y outcome vector (n x 1).
+#' @param w vector of treatment received  (n x 1).
+#' @param z vector of treatment assigned (i.e., instrumental variable)  (n x 1).
+#' @param x covariates matrix (n x p).
+#' @param binary Boolean to identify whether the outcome is binary or not, i.e., 
+#' continuous/discrete (default: FALSE).
+#' @param n_burn burn-in MCMC iterations for Bayesian Causal Forest 
+#' (default: 500).
+#' @param n_sim iterations to save post burn-in for Bayesian Causal Forest 
+#' (default: 500).
+#' @param inference_ratio % of observations to be assigned to the inference 
+#' subsample (default: 0.5).
+#' @param max_depth maximal depth for the generated CART (default: 2).
+#' @param cp complexity parameter for the generated CART (default: 0.01).
+#' @param minsplit minimum observations needed to perform a binary split in the 
+#' tree (default: 10).
+#' @param adj_method p-value adjustment method (default: "holm"), other 
+#' options are "bonferroni", "hockberg", "hommel", "BH", "BY", "fdr", "none".
+#' @param seed random seed for reproducible results (default: 42).
+#'
+#'
+#' @return
+#' List with 8 elements:
+#'   - 1. a tree structure discovering the heterogeneity in the causal effects, 
+#'   - 2. TSLS estimates of the Complier Average Causal Effects (CCACE) within its nodes, 
+#'   - 3. p-values for each CCACE, 
+#'   - 4. adjusted p-value for each CCACE, 
+#'   - 5. Intention-to-Treat within all the nodes, 
+#'   - 6. proportion of Compliers within all the nodes, 
+#'   - 7. p-value for weak-iv test, 
+#'   - 8. proportion of observations in the node .
+#'
+bcf_iv <- function(y, w, z, x, binary = FALSE, n_burn = 500, n_sim = 500, 
+                   inference_ratio = 0.5, max_depth = 2, cp = 0.01, 
+                   minsplit = 10, adj_method = "holm", seed = 42) {
   
   ######################################################
   ####         Step 0: Initialize the Data          ####
