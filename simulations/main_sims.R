@@ -1,33 +1,25 @@
-###########################
-## Initialize  Functions ##
-###########################
+##################
+## Dependencies ##
+##################
 
 rm(list=ls())
-setwd("/home/falco.bargaglistoffi/Desktop/R_files/BCF-IV/")
-source("bcf-iv.R")
+library(BayesIV)
+library(doParallel)
+library(foreach)
+library(dplyr)
 
 ###########################
 ## Initialize Parameters ##
 ###########################
 
-library(doParallel)
-library(foreach)
-library(dplyr)
-
-# n: number of data points
-# p: number of covariates 
-# rho: correlation within the covariates
-n = 1000
-p = 10
+n = 1000 # number of data points
+p = 10 # number of covariates 
 mu = rep(0, p)
-rho = 0
+rho = 0 # correlation within the covariates
 null = 0
-# seq: effect size
-# nsim: number of datasets created
-# compliance: compliance rate
-seq <- seq(0, 2, 0.2)
-nsim = 1000
-compliance = 0.75
+seq <- seq(0, 2, 0.2) # effect size
+nsim = 1000 # number of datasets created
+compliance = 0.75 # compliance rate
 
 # Set up Parallel Computation
 # Setup parallel backend to use many processors
@@ -40,7 +32,7 @@ comb <- function(x, ...) {
 }
 
 ##########################################
-##            1000 OBSERVATIONS          ##
+##            1000 OBSERVATIONS         ##
 ##########################################
 
 set.seed(2020)
