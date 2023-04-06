@@ -8,8 +8,22 @@ Authors@R: c(
            comment = c(ORCID = "0000-0003-2416-8943"))
   )
 Manteiner: Riccardo Cadei <rcadei@hsph.harvard.edu>
-Description: Bayesian machine learning algorithm to draw interpretable inference on heterogeneous causal effects in the presence of imperfect compliance (e.g., instrumental variables, fuzzy regression discontinuity designs). The proposed Bayesian Causal Forest with Instrumental Variable (BCF-IV) controls for the familywise error rate (or - less stringently - for the false discovery rate) at leaves' level.  
+Description: Bayesian machine learning algorithm to draw interpretable inference 
+    on heterogeneous causal effects in the presence of imperfect compliance 
+    (e.g., instrumental variables, fuzzy regression discontinuity designs). 
+    The proposed Bayesian Causal Forest with Instrumental Variable (BCF-IV) 
+    controls for the familywise error rate (or - less stringently - for the 
+    false discovery rate) at leaves' level.  
 License: MIT License
+Depends: 
+    R (>= 3.5.0)
+Imports:
+    bcf,
+    rpart,
+    lattice,
+    rattle,
+    AER,
+    bartCause
 Language: en-US
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
