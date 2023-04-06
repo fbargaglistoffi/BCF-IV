@@ -30,22 +30,10 @@ continuous/discrete (default: FALSE).}
 \value{
 List with 4 elements:
 \itemize{
-\item 
-\enumerate{
 \item a tree structure discovering the heterogeneity in the causal effects,
-}
-\item 
-\enumerate{
 \item TSLS estimates of the Complier Average Causal Effects (CCACE) within its nodes,
-}
-\item 
-\enumerate{
 \item p-values for each CCACE,
-}
-\item 
-\enumerate{
-\item p-value for weak-iv test
-}
+\item p-value for weak-iv test.
 }
 }
 \description{

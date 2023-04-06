@@ -56,38 +56,14 @@ options are "bonferroni", "hockberg", "hommel", "BH", "BY", "fdr", "none".}
 \value{
 List with 8 elements:
 \itemize{
-\item 
-\enumerate{
 \item a tree structure discovering the heterogeneity in the causal effects,
-}
-\item 
-\enumerate{
 \item TSLS estimates of the Complier Average Causal Effects (CCACE) within its nodes,
-}
-\item 
-\enumerate{
 \item p-values for each CCACE,
-}
-\item 
-\enumerate{
 \item adjusted p-value for each CCACE,
-}
-\item 
-\enumerate{
 \item Intention-to-Treat within all the nodes,
-}
-\item 
-\enumerate{
 \item proportion of Compliers within all the nodes,
-}
-\item 
-\enumerate{
 \item p-value for weak-iv test,
-}
-\item 
-\enumerate{
-\item proportion of observations in the node .
-}
+\item proportion of observations in the node.
 }
 }
 \description{

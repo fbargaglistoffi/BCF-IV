@@ -19,10 +19,10 @@
 #'
 #' @return
 #' List with 4 elements:
-#'   - 1. a tree structure discovering the heterogeneity in the causal effects, 
-#'   - 2. TSLS estimates of the Complier Average Causal Effects (CCACE) within its nodes, 
-#'   - 3. p-values for each CCACE, 
-#'   - 4. p-value for weak-iv test
+#'   - a tree structure discovering the heterogeneity in the causal effects, 
+#'   - TSLS estimates of the Complier Average Causal Effects (CCACE) within its nodes, 
+#'   - p-values for each CCACE, 
+#'   - p-value for weak-iv test.
 #'
 #'
 bcf_itt <- function(y, w, z, x, max_depth, n_burn, n_sim, 

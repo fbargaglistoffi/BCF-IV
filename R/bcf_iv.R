@@ -28,14 +28,14 @@
 #'
 #' @return
 #' List with 8 elements:
-#'   - 1. a tree structure discovering the heterogeneity in the causal effects, 
-#'   - 2. TSLS estimates of the Complier Average Causal Effects (CCACE) within its nodes, 
-#'   - 3. p-values for each CCACE, 
-#'   - 4. adjusted p-value for each CCACE, 
-#'   - 5. Intention-to-Treat within all the nodes, 
-#'   - 6. proportion of Compliers within all the nodes, 
-#'   - 7. p-value for weak-iv test, 
-#'   - 8. proportion of observations in the node .
+#'   - a tree structure discovering the heterogeneity in the causal effects, 
+#'   - TSLS estimates of the Complier Average Causal Effects (CCACE) within its nodes, 
+#'   - p-values for each CCACE, 
+#'   - adjusted p-value for each CCACE, 
+#'   - Intention-to-Treat within all the nodes, 
+#'   - proportion of Compliers within all the nodes, 
+#'   - p-value for weak-iv test, 
+#'   - proportion of observations in the node.
 #'
 bcf_iv <- function(y, w, z, x, binary = FALSE, n_burn = 500, n_sim = 500, 
                    inference_ratio = 0.5, max_depth = 2, cp = 0.01, 
