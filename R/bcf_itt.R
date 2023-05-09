@@ -24,6 +24,7 @@
 #'   - p-values for each CCACE, 
 #'   - p-value for weak-iv test.
 #'
+#' @export
 #'
 bcf_itt <- function(y, w, z, x, max_depth, n_burn, n_sim, 
                     inference_ratio, binary = FALSE) {

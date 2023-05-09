@@ -37,6 +37,8 @@
 #'   - p-value for weak-iv test, 
 #'   - proportion of observations in the node.
 #'
+#' @export
+#' 
 bcf_iv <- function(y, w, z, x, binary = FALSE, n_burn = 500, n_sim = 500, 
                    inference_ratio = 0.5, max_depth = 2, cp = 0.01, 
                    minsplit = 10, adj_method = "holm", seed = 42) {
