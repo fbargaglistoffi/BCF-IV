@@ -56,9 +56,22 @@ The _bcf_itt_ function returns the discovered sub-population, the conditional co
 ## Examples
 
 ```R
-TODO: data generating process
+# Load Packages
+library(BayesIV)
+library(bartCause)
+library(rpart)
+library(AER)
+library(MASS)
 
-bcf_iv(y, w, z, x, 
+# Generate the dataset
+dataset <- generate_dataset(n = 1000, p = 10, rho = 0, null = 0, effect_size = 4, compliance = 0.75)
+
+# Attach Data
+attach(dataset)
+X <- cbind(x1, x2, x3, x4, x5,
+           x6, x7, x8, x9, x10)
+# BCF-IV
+bcf_iv(y, w, z, X, 
        n_burn = 2000, 
        n_sim = 2000, 
        inference_ratio = 0.5, 
@@ -66,12 +79,16 @@ bcf_iv(y, w, z, x,
        max_depth = 2, 
        adj_method = "holm")
 
-bcf_itt(y, z, x, 
+# BCF-ITT
+bcf_itt(y, z, X, 
         n_burn= 2000, 
         n_sim = 2000, 
         inference_ratio = 0.5, 
         binary = TRUE, 
         max_depth = 2)
+
+# Detach Data
+detach(dataset)
 ```
 
 #### References
