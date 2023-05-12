@@ -1,6 +1,6 @@
 # Bayesian Causal Forest with Instrumental Variable [BayesIV]
 
-In this repository we provide the code for the _BCF-IV_ and _BCF-ITT_ functions and for the application and simulations' Sections of the paper <a href="https://arxiv.org/abs/1905.12707"> _"Heterogeneous causal effects with imperfect compliance: a Bayesian machine learning approach"_ </a> by F.J. Bargagli-Stoffi, K. De Witte and G. Gnecco. 
+In this repository we provide the code for the _BCF-IV_ and _BCF-ITT_ functions of the paper <a href="https://projecteuclid.org/journals/annals-of-applied-statistics/volume-16/issue-3/Heterogeneous-causal-effects-with-imperfect-compliance--A-Bayesian-machine/10.1214/21-AOAS1579.short"> _"Heterogeneous causal effects with imperfect compliance: a Bayesian machine learning approach"_ </a> by F.J. Bargagli-Stoffi, K. De Witte and G. Gnecco. 
 
 ## Getting Started
 
@@ -64,7 +64,7 @@ library(AER)
 library(MASS)
 
 # Generate the dataset
-dataset <- generate_dataset(n = 1000, p = 10, rho = 0, null = 0, effect_size = 4, compliance = 0.75)
+dataset <- generate_dataset(n = 1000, p = 10, rho = 0, null = 0, effect_size = 2, compliance = 0.75)
 
 # Attach Data
 attach(dataset)
@@ -75,7 +75,7 @@ bcf_iv(y, w, z, X,
        n_burn = 2000, 
        n_sim = 2000, 
        inference_ratio = 0.5, 
-       binary = TRUE, 
+       binary = FALSE, 
        max_depth = 2, 
        adj_method = "holm")
 
@@ -84,7 +84,7 @@ bcf_itt(y, z, X,
         n_burn= 2000, 
         n_sim = 2000, 
         inference_ratio = 0.5, 
-        binary = TRUE, 
+        binary = FALSE, 
         max_depth = 2)
 
 # Detach Data
