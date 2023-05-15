@@ -89,8 +89,8 @@ bcf_itt(y, w, z, X,
 For more exaustive example and synthetic simulations check the folder <a href="https://github.com/fbargaglistoffi/BCF-IV/tree/master/simulations">
 `simulation/`</a>.
 
-#### Reference
-* Falco J. Bargagli-Stoffi, Kristof De Witte, Giorgio Gnecco. <b>Heterogeneous causal effects with imperfect compliance: a Bayesian machine learning approach.</b> [<a href="https://projecteuclid.org/journals/annals-of-applied-statistics/volume-16/issue-3/Heterogeneous-causal-effects-with-imperfect-compliance--A-Bayesian-machine/10.1214/21-AOAS1579.short">paper</a>] [<a href="https://arxiv.org/abs/1905.12707">preprint</a>]
+## Reference
+* Bargagli-Stoffi, F.J., De Witte, K. and Gnecco, G., 2022. Heterogeneous causal effects with imperfect compliance: a Bayesian machine learning approach. The Annals of Applied Statistics, 16(3), pp.1986-2009. </b> [<a href="https://projecteuclid.org/journals/annals-of-applied-statistics/volume-16/issue-3/Heterogeneous-causal-effects-with-imperfect-compliance--A-Bayesian-machine/10.1214/21-AOAS1579.short">paper</a>] [<a href="https://arxiv.org/abs/1905.12707">preprint</a>]
 
 ```
 @article{bargagli2022heterogeneous,
