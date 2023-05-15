@@ -13,8 +13,8 @@
 #' @param compliance compliance rate (default: 0.75)
 #'
 #' @return
-#' A data frame containing the generated dataset
-#'
+#' A list containing the different variables in the generated dataset (y,z,w,X).
+#' 
 #' @examples
 #' dataset <- generate_dataset()
 #'
@@ -62,7 +62,7 @@ generate_dataset <- function(n = 1000, p = 10, rho = 0, null = 0, effect_size = 
   y <- z * y1 + (1 - z) * y0
   
   # Observed data
-  dataset <- data.frame(y, z, w, X)
+  dataset <- list(y = y, z = z, w = w, X = X)
   
   return(dataset)
 }
