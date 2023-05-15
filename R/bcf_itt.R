@@ -16,6 +16,8 @@
 #' subsample.
 #' @param binary Boolean to identify whether the outcome is binary or not, i.e., 
 #' continuous/discrete (default: FALSE).
+#' @param seed random seed for reproducible results (default: 42).
+
 #'
 #' @return
 #' List with 4 elements:
@@ -27,13 +29,14 @@
 #' @export
 #'
 bcf_itt <- function(y, w, z, x, max_depth, n_burn, n_sim, 
-                    inference_ratio, binary = FALSE) {
+                    inference_ratio, binary = FALSE, seed = 42) {
   
   ######################################################
   ####         Step 0: Initialize the Data          ####
   ######################################################
   
   # Split data into Discovery and Inference
+  set.seed(seed)
   index <- sample(nrow(x), nrow(x)*inference_ratio, replace=FALSE)
   
   # Initialize total dataset

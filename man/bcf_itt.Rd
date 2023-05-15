@@ -4,7 +4,18 @@
 \alias{bcf_itt}
 \title{Bayesian Causal Forest with Intention To Treat}
 \usage{
-bcf_itt(y, w, z, x, max_depth, n_burn, n_sim, inference_ratio, binary = FALSE)
+bcf_itt(
+  y,
+  w,
+  z,
+  x,
+  max_depth,
+  n_burn,
+  n_sim,
+  inference_ratio,
+  binary = FALSE,
+  seed = 42
+)
 }
 \arguments{
 \item{y}{outcome vector (n x 1).}
@@ -26,6 +37,8 @@ subsample.}
 
 \item{binary}{Boolean to identify whether the outcome is binary or not, i.e.,
 continuous/discrete (default: FALSE).}
+
+\item{seed}{random seed for reproducible results (default: 42).}
 }
 \value{
 List with 4 elements:
