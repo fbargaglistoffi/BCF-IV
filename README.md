@@ -1,6 +1,6 @@
 # Bayesian Causal Forest with Instrumental Variable [BayesIV]
 
-In this repository we provide the code for the _BCF-IV_ and _BCF-ITT_ functions of the paper <a href="https://projecteuclid.org/journals/annals-of-applied-statistics/volume-16/issue-3/Heterogeneous-causal-effects-with-imperfect-compliance--A-Bayesian-machine/10.1214/21-AOAS1579.short"> _"Heterogeneous causal effects with imperfect compliance: a Bayesian machine learning approach"_ </a> by F.J. Bargagli-Stoffi, K. De Witte and G. Gnecco published on _The Annals of Applied Statistics_. 
+In this repository we provide the code for the _BCF-IV_ and _BCF-ITT_ functions of the paper <a href="https://projecteuclid.org/journals/annals-of-applied-statistics/volume-16/issue-3/Heterogeneous-causal-effects-with-imperfect-compliance--A-Bayesian-machine/10.1214/21-AOAS1579.short"> _"Heterogeneous causal effects with imperfect compliance: a Bayesian machine learning approach"_ </a> by F.J. Bargagli-Stoffi, K. De Witte and G. Gnecco published in _The Annals of Applied Statistics_. 
 
 ## Getting Started
 
