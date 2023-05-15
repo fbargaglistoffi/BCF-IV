@@ -9,13 +9,15 @@
 #' @param w vector of treatment received  (n x 1).
 #' @param z vector of treatment assigned (i.e., instrumental variable)  (n x 1).
 #' @param x covariates matrix (n x p).
-#' @param max_depth maximal depth for the generated CART.
-#' @param n_burn burn-in MCMC iterations for Bayesian Causal Forest.
-#' @param n_sim iterations to save post burn-in for Bayesian Causal Forest.
-#' @param inference_ratio % of observations to be assigned to the inference 
-#' subsample.
 #' @param binary Boolean to identify whether the outcome is binary or not, i.e., 
 #' continuous/discrete (default: FALSE).
+#' @param max_depth maximal depth for the generated CART (default: 2).
+#' @param n_burn burn-in MCMC iterations for Bayesian Causal Forest (default: 
+#' 500).
+#' @param n_sim iterations to save post burn-in for Bayesian Causal Forest 
+#' (default: 500).
+#' @param inference_ratio % of observations to be assigned to the inference 
+#' subsample (default: 0.5).
 #' @param seed random seed for reproducible results (default: 42).
 
 #'
@@ -28,8 +30,8 @@
 #'
 #' @export
 #'
-bcf_itt <- function(y, w, z, x, max_depth, n_burn, n_sim, 
-                    inference_ratio, binary = FALSE, seed = 42) {
+bcf_itt <- function(y, w, z, x,  binary = FALSE, max_depth = 2, n_burn = 500, 
+                    n_sim = 500, inference_ratio = 0.5, seed = 42) {
   
   ######################################################
   ####         Step 0: Initialize the Data          ####

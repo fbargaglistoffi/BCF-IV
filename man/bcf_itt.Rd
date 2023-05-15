@@ -9,11 +9,11 @@ bcf_itt(
   w,
   z,
   x,
-  max_depth,
-  n_burn,
-  n_sim,
-  inference_ratio,
   binary = FALSE,
+  max_depth = 2,
+  n_burn = 500,
+  n_sim = 500,
+  inference_ratio = 0.5,
   seed = 42
 )
 }
@@ -26,17 +26,19 @@ bcf_itt(
 
 \item{x}{covariates matrix (n x p).}
 
-\item{max_depth}{maximal depth for the generated CART.}
-
-\item{n_burn}{burn-in MCMC iterations for Bayesian Causal Forest.}
-
-\item{n_sim}{iterations to save post burn-in for Bayesian Causal Forest.}
-
-\item{inference_ratio}{\% of observations to be assigned to the inference
-subsample.}
-
 \item{binary}{Boolean to identify whether the outcome is binary or not, i.e.,
 continuous/discrete (default: FALSE).}
+
+\item{max_depth}{maximal depth for the generated CART (default: 2).}
+
+\item{n_burn}{burn-in MCMC iterations for Bayesian Causal Forest (default:
+500).}
+
+\item{n_sim}{iterations to save post burn-in for Bayesian Causal Forest
+(default: 500).}
+
+\item{inference_ratio}{\% of observations to be assigned to the inference
+subsample (default: 0.5).}
 
 \item{seed}{random seed for reproducible results (default: 42).}
 }
