@@ -38,6 +38,10 @@
 #'   - proportion of observations in the node.
 #'
 #' @export
+#' @import bartCause
+#' @import rpart
+#' @import AER
+#' @import MASS
 #' 
 bcf_iv <- function(y, w, z, x, binary = FALSE, n_burn = 500, n_sim = 500, 
                    inference_ratio = 0.5, max_depth = 2, cp = 0.01, 

@@ -2,3 +2,8 @@
 
 export(bcf_itt)
 export(bcf_iv)
+export(generate_dataset)
+import(AER)
+import(MASS)
+import(bartCause)
+import(rpart)
