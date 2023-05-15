@@ -56,20 +56,18 @@ The _bcf_itt_ function returns the discovered sub-population, the conditional co
 ## Examples
 
 ```R
-# Load Packages
-library(BayesIV)
-library(bartCause)
-library(rpart)
-library(AER)
-library(MASS)
-
 # Generate the dataset
-dataset <- generate_dataset(n = 1000, p = 10, rho = 0, null = 0, effect_size = 2, compliance = 0.75)
+dataset <- generate_dataset(n = 1000, 
+                            p = 10, 
+                            rho = 0, 
+                            null = 0, 
+                            effect_size = 2, 
+                            compliance = 0.75)
+y <- dataset[["y"]]
+w <- dataset[["w"]]
+z <- dataset[["z"]]
+X <- dataset[["X"]]
 
-# Attach Data
-attach(dataset)
-X <- cbind(x1, x2, x3, x4, x5,
-           x6, x7, x8, x9, x10)
 # BCF-IV
 bcf_iv(y, w, z, X, 
        n_burn = 2000, 
@@ -86,10 +84,10 @@ bcf_itt(y, z, X,
         inference_ratio = 0.5, 
         binary = FALSE, 
         max_depth = 2)
-
-# Detach Data
-detach(dataset)
 ```
+
+For more exaustive example and synthetic simulations check the folder <a href="https://github.com/fbargaglistoffi/BCF-IV/tree/master/simulations">
+`simulation/`</a>.
 
 #### References
 * Falco J. Bargagli-Stoffi, Kristof De Witte, Giorgio Gnecco. <b>Heterogeneous causal effects with imperfect compliance: a novel Bayesian machine learning approach.</b> [<a href="https://arxiv.org/abs/1905.12707">link</a>]
