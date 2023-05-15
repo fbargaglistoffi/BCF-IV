@@ -89,7 +89,18 @@ bcf_itt(y, w, z, X,
 For more exaustive example and synthetic simulations check the folder <a href="https://github.com/fbargaglistoffi/BCF-IV/tree/master/simulations">
 `simulation/`</a>.
 
-#### References
-* Falco J. Bargagli-Stoffi, Kristof De Witte, Giorgio Gnecco. <b>Heterogeneous causal effects with imperfect compliance: a novel Bayesian machine learning approach.</b> [<a href="https://projecteuclid.org/journals/annals-of-applied-statistics/volume-16/issue-3/Heterogeneous-causal-effects-with-imperfect-compliance--A-Bayesian-machine/10.1214/21-AOAS1579.short">paper</a>] [<a href="https://arxiv.org/abs/1905.12707">preprint</a>]
-* P. Richard Hahn, Jared S. Murray, Carlos Carvalho. <b>Bayesian regression tree models for causal inference: regularization, confounding, and heterogeneous effects.</b> [<a href="https://arxiv.org/abs/1706.09523">link</a>]
+#### Reference
+* Falco J. Bargagli-Stoffi, Kristof De Witte, Giorgio Gnecco. <b>Heterogeneous causal effects with imperfect compliance: a Bayesian machine learning approach.</b> [<a href="https://projecteuclid.org/journals/annals-of-applied-statistics/volume-16/issue-3/Heterogeneous-causal-effects-with-imperfect-compliance--A-Bayesian-machine/10.1214/21-AOAS1579.short">paper</a>] [<a href="https://arxiv.org/abs/1905.12707">preprint</a>]
 
+```
+@article{bargagli2022heterogeneous,
+  title={{Heterogeneous causal effects with imperfect compliance: a Bayesian machine learning approach}},
+  author={Bargagli-Stoffi, Falco J and De Witte, Kristof and Gnecco, Giorgio},
+  journal={The Annals of Applied Statistics},
+  volume={16},
+  number={3},
+  pages={1986--2009},
+  year={2022},
+  publisher={Institute of Mathematical Statistics}
+}
+```
