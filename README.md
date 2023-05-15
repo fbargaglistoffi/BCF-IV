@@ -17,7 +17,7 @@ Import:
 library("BayesIV")
 ```
 
-Attention: Our method depends on `bcf` package, which, unfortunately, has just been removed from CRAN due to an un-addressed Issue. In order to run `BayesIV` package, manually install `bcf` package from GitHub following its [installation guideline](https://github.com/jaredsmurray/bcf).
+**Attention**: `BayesIV` depends on `bcf` package, which, unfortunately, has just been removed from CRAN due to an un-addressed Issue. In order to run `BayesIV` package, manually install `bcf` package from GitHub following its [installation guideline](https://github.com/jaredsmurray/bcf).
 
 ## BCF-IV 
 
