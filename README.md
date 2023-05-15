@@ -78,7 +78,7 @@ bcf_iv(y, w, z, X,
        adj_method = "holm")
 
 # BCF-ITT
-bcf_itt(y, z, X, 
+bcf_itt(y, w, z, X, 
         n_burn= 2000, 
         n_sim = 2000, 
         inference_ratio = 0.5, 
