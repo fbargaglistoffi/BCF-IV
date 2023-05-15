@@ -17,6 +17,8 @@ Import:
 library("BayesIV")
 ```
 
+Attention: Our method depends on `bcf` package, which, unfortunately, has just been removed from CRAN due to an un-addressed Issue. In order to run `BayesIV` package, manually install `bcf` package from GitHub following its [installation guideline](https://github.com/jaredsmurray/bcf).
+
 ## BCF-IV 
 
 The _bcf-iv_ function discovers and estimates, in an interpretable manner, the effects heterogeneity in settings where the assignment mechanism is irregular (e.g., instrumental variable and fuzzy regression discontinuity scenarios). This function is directly built to discover and estimate the heterogeneity in the Complier Average Treatment Effects (CACE).
