@@ -10,6 +10,7 @@ w <- dataset[["w"]]
 z <- dataset[["z"]]
 X <- dataset[["X"]]
 
+# Run BCF-ITT
 bcf_itt(y, w, z, X, 
         n_burn= 2000, 
         n_sim = 2000, 
