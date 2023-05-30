@@ -2,6 +2,8 @@
 
 In this repository we provide the code for the _BCF-IV_ and _BCF-ITT_ functions of the paper <a href="https://projecteuclid.org/journals/annals-of-applied-statistics/volume-16/issue-3/Heterogeneous-causal-effects-with-imperfect-compliance--A-Bayesian-machine/10.1214/21-AOAS1579.short"> _"Heterogeneous causal effects with imperfect compliance: a Bayesian machine learning approach"_ </a> by F.J. Bargagli-Stoffi, K. De Witte and G. Gnecco published in _The Annals of Applied Statistics_. 
 
+The article has also been covered and summarized in two blog posts on <a href="https://www.r-bloggers.com/2021/12/heterogeneous-treatment-effects-with-instrumental-variables-a-causal-machine-learning-approach/"> _R-bloggers_ </a> and <a href="https://youngstats.github.io/post/2021/12/06/heterogeneous-treatment-effects-with-instrumental-variables-a-causal-machine-learning-approach/"> _YoungStatS_ </a>. Check them out for a coincise summary of the main novelties introduced in the paper.
+
 ## Getting Started
 
 Installing the latest developing version: 
