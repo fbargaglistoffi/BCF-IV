@@ -7,7 +7,7 @@ authors:
   - family-names: Cadei
     given-names: Riccardo
     orcid: https://orcid.org/0000-0003-2416-8943
-title: "BayesIV: Bayesian Causal Forest with Instrumental Variable"
+title: "BayesIV: An R Package for Bayesian Causal Forest with Instrumental Variable"
 version: 1.1.0
 identifiers:
   - type: doi
